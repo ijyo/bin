@@ -1,14 +1,15 @@
-SRCDIR  := bin
-DESTDIR := $(HOME)/.local/bin
-SRCS    := $(wildcard $(SRCDIR)/*)
-DESTS   := $(addprefix $(DESTDIR)/, $(notdir $(SRCS)))
+PREFIX := $(HOME)/.local
+SRC    := $(wildcard bin/*)
+DEST   := $(addprefix $(DESTDIR)$(PREFIX)/bin/, $(notdir $(SRC)))
 
-install:
-	mkdir -p $(DESTDIR)
-	cp -f $(SRCS) $(DESTDIR)
-	chmod 755 $(DESTS)
+all:
+
+install: all
+	mkdir -p $(DESTDIR)$(PREFIX)/bin
+	cp -f $(SRC) $(DESTDIR)$(PREFIX)/bin
+	chmod 755 $(DEST)
 
 uninstall:
-	rm -f $(DESTS)
+	rm -f $(DEST)
 
-.PHONY: install uninstall
+.PHONY: all install uninstall
