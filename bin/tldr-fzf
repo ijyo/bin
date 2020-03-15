@@ -1,0 +1,2 @@
+#!/usr/bin/env zsh
+print -l "${(s:, :)$(tldr -l)}" | fzf | xargs -I% tldr %
