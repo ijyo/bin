@@ -1,2 +1,14 @@
 #!/usr/bin/env zsh
-print -l "${(s:, :)$(tldr -l)}" | fzf | xargs tldr | less -R
+
+local_dir=${TLDR_LOCAL_DIR:-${XDG_DATA_HOME:-${HOME}/.local/share}/tldr}
+locals=$(ls ${local_dir} | sed 's/^/local\//')
+
+collection=$(print -l "${(s:, :)$(tldr -l)}")
+
+target=$(print -l $locals $collection | fzf)
+
+if (( ${locals[(I)$target]} )); then
+  echo $target | sed 's/^local\///' | xargs -I% tldr -f ${local_dir}/% | less -R
+else
+  tldr $target | less -R
+fi
