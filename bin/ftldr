@@ -2,14 +2,14 @@
 set -eu
 
 local_dir=${TLDR_LOCAL_DIR:-${XDG_DATA_HOME:-${HOME}/.local/share}/tldr}
-locals=$(find ${local_dir} -type f -name "*.md" | sed "s|${local_dir}|local|")
+locals=$(find ${local_dir} -type f -name "*.md" | sed -E "s|^${local_dir}/(.*)$|\1 [local]|")
 
 collection=$(print -l "${(s:, :)$(tldr -l)}")
 
-target=$(print -l $locals $collection | fzf)
+target=$(print -l $locals $collection | column -t | fzf)
 
-if (( ${locals[(I)$target]} )); then
-  echo $target | sed 's|^local/||' | xargs -I% tldr -f ${local_dir}/% | less -R
+if [[ $(echo $target | grep '[local]') ]]; then
+  echo $target | cut -d' ' -f1 | xargs -I% tldr -f ${local_dir}/% | less -R
 else
-  tldr $target | less -R
+  echo $target | cut -d' ' -f1 | xargs tldr | less -R
 fi
